@@ -2,17 +2,32 @@
 <html>
 <head>
   <title>MoMA Explorer</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-<h1>MoMA Explorer</h1>
+<nav class="navbar">
+  <a href="index.html" class="logo">MoMA Explorer</a>
+</nav>
 
-<button onclick="loadArtists()">Load Artists</button>
+<div class="main">
 
-<div id="output"></div>
+  <h1>Explore the MoMA Collection</h1>
 
-<script src="js/main.js"></script>
+  <p>
+    MoMA Explorer is a student project made with the Museum of Modern Art's dataset.
+    It allows you to explore artworks geographically or chronologically.
+  </p>
+
+  <p>Choose a mode to begin your journey.</p>
+
+  <div class="buttons">
+    <a href="map.html">Explore by Geography</a>
+    <a href="timeline.html">Explore by Time</a>
+  </div>
+
+</div>
 
 </body>
 </html>

@@ -1,0 +1,85 @@
+body {
+  margin: 0;
+  font-family: serif;
+}
+
+/* NAVBAR */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+
+  background-color: black;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 30px;
+}
+
+/* navbar text */
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* MAIN CONTENT */
+.main {
+  margin-top: 60px;
+  padding: 40px;
+  text-align: center;
+}
+
+/* BUTTON CONTAINER */
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 80px;
+}
+
+.buttons a {
+  background-color: black;
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.buttons a:hover {
+  background-color: #444;
+}
+
+
+.logo {
+  color: white;
+  text-decoration: none;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.logo:hover {
+  color: #ccc;
+}
+
+#map {
+  width: 80%;
+  height: 70vh;
+  margin: 20px auto; /* THIS centers it */
+}
+
+#country-list {
+  width: 70%;
+  margin: 20px auto;
+  text-align: left;
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}

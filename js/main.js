@@ -1,5 +1,5 @@
 async function loadArtists() {
-  const response = await fetch("data/Artists.json");
+  const response = await fetch("data/Artists_clean.json");
   const artists = await response.json();
 
   console.log(artists); // check in console
