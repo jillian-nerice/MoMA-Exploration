@@ -12,149 +12,6 @@ async function loadMap() {
     return "#9ea1cc";
   }
 
-  // mapping nationality → country name
-  const nationalityToCountry = {
-    "Afghan": "Afghanistan",
-    "Albanian": "Albania",
-    "Algerian": "Algeria",
-    "American": "United States of America",
-    "Angolan": "Angola",
-    "Anmatyerr [Australian]": "Australia",
-    "Argentine": "Argentina",
-    "Australian": "Australia",
-    "Austrian": "Austria",
-    "Azerbaijani": "Azerbaijan",
-    "Bahamian": "Bahamas",
-    "Bangladeshi": "Bangladesh",
-    "Belgian": "Belgium",
-    "Beninese": "Benin",
-    "Bolivian": "Bolivia",
-    "Bosnian": "Bosnia and Herzegovina",
-    "Brazilian": "Brazil",
-    "British": "United Kingdom",
-    "Bulgarian": "Bulgaria",
-    "Burkinabé": "Burkina Faso",
-    "Cambodian": "Cambodia",
-    "Cameroonian": "Cameroon",
-    "Canadian": "Canada",
-    "Canadian Inuit": "Canada",
-    "Catalan": "Spain",
-    "Central African": "Central African Republic",
-    "Chilean": "Chile",
-    "Chinese": "China",
-    "Colombian": "Colombia",
-    "Congolese": "Democratic Republic of the Congo",
-    "Coptic": "Egypt",
-    "Costa Rican": "Costa Rica",
-    "Croatian": "Croatia",
-    "Cuban": "Cuba",
-    "Cypriot": "Cyprus",
-    "Czech": "Czech Republic",
-    "Czechoslovakian": "Czech Republic",
-    "Danish": "Denmark",
-    "Dominican": "Dominican Republic",
-    "Dutch": "Netherlands",
-    "Ecuadorian": "Ecuador",
-    "Egyptian": "Egypt",
-    "Emirati": "United Arab Emirates",
-    "English": "United Kingdom",
-    "Estonian": "Estonia",
-    "Ethiopian": "Ethiopia",
-    "Filipino": "Philippines",
-    "Finnish": "Finland",
-    "French": "France",
-    "French-Ivorian": "Ivory Coast",
-    "Georgian": "Georgia",
-    "German": "Germany",
-    "Ghanaian": "Ghana",
-    "Greek": "Greece",
-    "Guatemalan": "Guatemala",
-    "Haitian": "Haiti",
-    "Hungarian": "Hungary",
-    "Icelandic": "Iceland",
-    "Indian": "India",
-    "Indonesian": "Indonesia",
-    "Iranian": "Iran",
-    "Iraqi": "Iraq",
-    "Irish": "Ireland",
-    "Israeli": "Israel",
-    "Italian": "Italy",
-    "Ivatan": "Philippines",
-    "Ivorian": "Ivory Coast",
-    "Jamaican": "Jamaica",
-    "Japanese": "Japan",
-    "Kalaaleq": "Greenland",
-    "Kenyan": "Kenya",
-    "Korean": "South Korea",
-    "South Korean": "South Korea",
-    "Kuwaiti": "Kuwait",
-    "Kyrgyz": "Kyrgyzstan",
-    "Latvian": "Latvia",
-    "Lebanese": "Lebanon",
-    "Lithuanian": "Lithuania",
-    "Luxembourger": "Luxembourg",
-    "Macedonian": "Macedonia",
-    "Malaysian": "Malaysia",
-    "Malian": "Mali",
-    "Mexican": "Mexico",
-    "Moroccan": "Morocco",
-    "Mozambican": "Mozambique",
-    "Namibian": "Namibia",
-    "Native American": "United States of America",
-    "Nepali": "Nepal",
-    "New Zealander": "New Zealand",
-    "Nicaraguan": "Nicaragua",
-    "Nigerian": "Nigeria",
-    "Norwegian": "Norway",
-    "Ojibwe": "United States of America",
-    "Okinawan": "Japan",
-    "Oneida": "United States of America",
-    "Pakistani": "Pakistan",
-    "Palestinian": "Palestine",
-    "Panamanian": "Panama",
-    "Paraguayan": "Paraguay",
-    "Persian": "Iran",
-    "Peruvian": "Peru",
-    "Polish": "Poland",
-    "Portuguese": "Portugal",
-    "Puerto Rican": "Puerto Rico",
-    "Romanian": "Romania",
-    "Russian": "Russia",
-    "Sahrawi": "Western Sahara",
-    "Salvadoran": "El Salvador",
-    "Scottish": "United Kingdom",
-    "Senegalese": "Senegal",
-    "Serbian": "Serbia",
-    "Sierra Leonean": "Sierra Leone",
-    "Singaporean": "Singapore",
-    "Slovak": "Slovakia",
-    "Slovenian": "Slovenia",
-    "South African": "South Africa",
-    "Spanish": "Spain",
-    "Spirit Lake Dakota/Cheyenne River Lakota": "United States of America",
-    "Sri Lankan": "Sri Lanka",
-    "Sudanese": "Sudan",
-    "Swedish": "Sweden",
-    "Swiss": "Switzerland",
-    "Syrian": "Syria",
-    "Taiwanese": "Taiwan",
-    "Tanzanian": "Tanzania",
-    "Thai": "Thailand",
-    "Tlingit": "United States of America",
-    "Trinidad and Tobagonian": "Trinidad and Tobago",
-    "Tunisian": "Tunisia",
-    "Turkish": "Turkey",
-    "Ugandan": "Uganda",
-    "Ukrainian": "Ukraine",
-    "Uruguayan": "Uruguay",
-    "Uzbekistani": "Uzbekistan",
-    "Venezuelan": "Venezuela",
-    "Vietnamese": "Vietnam",
-    "Welsh": "United Kingdom",
-    "Yugoslavian": "Serbia",
-    "Zimbabwean": "Zimbabwe"
-  };
-
   // create map
   const map = L.map("map");
 
@@ -169,11 +26,9 @@ async function loadMap() {
   const geoRes = await fetch("data/countries.geo.json");
   const geoData = await geoRes.json();
 
-  // get all country names that exist in the GeoJSON
   const geoCountryNames = geoData.features.map(feature => feature.properties.name);
-  console.log("GeoJSON country names:", geoCountryNames.sort());
 
-  // helper: handles cases where your mapping name might be slightly different from the GeoJSON name
+  // handles country-name differences between mapping and GeoJSON
   function resolveGeoCountryName(country) {
     const aliases = {
       "Czech Republic": ["Czech Republic", "Czechia"],
@@ -194,8 +49,7 @@ async function loadMap() {
       "Tanzania": ["Tanzania", "United Republic of Tanzania"],
       "Iran": ["Iran", "Islamic Republic of Iran"],
       "Vietnam": ["Vietnam", "Viet Nam"],
-      "Laos": ["Laos", "Lao PDR"],
-      "Moldova": ["Moldova", "Republic of Moldova"]
+      "Laos": ["Laos", "Lao PDR"]
     };
 
     const possibleNames = aliases[country] || [country];
@@ -209,43 +63,54 @@ async function loadMap() {
     return null;
   }
 
+  // connects GeoJSON country name back to the standard country name used in links
+  function getStandardCountryFromGeo(geoCountryName) {
+    const allCountries = [...new Set(Object.values(nationalityToCountry))];
+
+    for (const country of allCountries) {
+      const resolvedName = resolveGeoCountryName(country);
+
+      if (resolvedName === geoCountryName) {
+        return country;
+      }
+    }
+
+    return geoCountryName;
+  }
+
   // count artists per country
   const countryCounts = {};
   const unmappedNationalities = {};
   const missingGeoCountries = {};
 
   artists.forEach(artist => {
-    const nationality = artist.Nationality;
-
+    const nationality = cleanNationality(artist.Nationality);
     if (!nationality) return;
 
-    const cleanNationality = nationality.trim();
-    const country = nationalityToCountry[cleanNationality];
+    const country = nationalityToCountry[nationality];
 
-    // if the nationality does not exist in nationalityToCountry
     if (!country) {
-      unmappedNationalities[cleanNationality] =
-        (unmappedNationalities[cleanNationality] || 0) + 1;
+      unmappedNationalities[nationality] =
+        (unmappedNationalities[nationality] || 0) + 1;
       return;
     }
 
     const geoCountryName = resolveGeoCountryName(country);
 
-    // if we mapped the nationality, but the country name does not match the GeoJSON
     if (!geoCountryName) {
       missingGeoCountries[country] =
         (missingGeoCountries[country] || 0) + 1;
       return;
     }
 
-    countryCounts[geoCountryName] = (countryCounts[geoCountryName] || 0) + 1;
+    countryCounts[geoCountryName] =
+      (countryCounts[geoCountryName] || 0) + 1;
   });
 
   console.log("Country counts:", countryCounts);
   console.log("Still unmapped nationalities:", unmappedNationalities);
   console.log("Mapped countries missing from GeoJSON:", missingGeoCountries);
 
-  // get count for a GeoJSON country
   function getCountryCount(countryName) {
     return countryCounts[countryName] || 0;
   }
@@ -263,15 +128,33 @@ async function loadMap() {
     };
   }
 
-  // hover tooltip
+  // hover + click behaviour
   function onEachFeature(feature, layer) {
-    const countryName = feature.properties.name;
-    const count = getCountryCount(countryName);
+    const geoCountryName = feature.properties.name;
+    const count = getCountryCount(geoCountryName);
 
     layer.bindTooltip(
-      `<strong>${countryName}</strong><br>${count} artists`,
+      `<strong>${geoCountryName}</strong><br>${count} artists`,
       { sticky: true }
     );
+
+    layer.on("mouseover", function () {
+      layer.setStyle({
+        weight: 2,
+        color: "#222"
+      });
+    });
+
+    layer.on("mouseout", function () {
+      layer.setStyle(style(feature));
+    });
+
+    layer.on("click", function () {
+      const standardCountryName = getStandardCountryFromGeo(geoCountryName);
+
+      window.location.href =
+        `country.html?country=${encodeURIComponent(standardCountryName)}`;
+    });
   }
 
   // add countries
@@ -280,7 +163,7 @@ async function loadMap() {
     onEachFeature: onEachFeature
   }).addTo(map);
 
-  // default starting view: less Antarctica, more useful world view
+  // default starting view
   const defaultBounds = L.latLngBounds(
     [-55, -170],
     [75, 180]
@@ -288,10 +171,10 @@ async function loadMap() {
 
   map.fitBounds(defaultBounds);
 
-  // prevents dragging too far into empty map space
+  // stops user from dragging too far into empty space
   map.setMaxBounds([
     [-65, -220],
-    [85, 220]
+    [88, 220]
   ]);
 
   // reset button
@@ -356,7 +239,7 @@ async function loadMap() {
 window.onload = loadMap;
 
 
-// show countries list
+// show clickable countries and clickable subsections in sidebar
 async function showCountries() {
   const response = await fetch("data/Artists_clean.json");
   const artists = await response.json();
@@ -367,29 +250,69 @@ async function showCountries() {
   const sortSelect = document.getElementById("sort-countries");
   const sortType = sortSelect ? sortSelect.value : "count";
 
-  const nationalityCounts = {};
+  const countryData = {};
 
   artists.forEach(artist => {
-    const nationality = artist.Nationality;
+    const nationality = cleanNationality(artist.Nationality);
     if (!nationality) return;
 
-    const cleanNationality = nationality.trim();
+    const country = nationalityToCountry[nationality];
+    if (!country) return;
 
-    nationalityCounts[cleanNationality] =
-      (nationalityCounts[cleanNationality] || 0) + 1;
+    if (!countryData[country]) {
+      countryData[country] = {
+        count: 0,
+        nationalities: {}
+      };
+    }
+
+    countryData[country].count++;
+
+    countryData[country].nationalities[nationality] =
+      (countryData[country].nationalities[nationality] || 0) + 1;
   });
 
-  let sorted = Object.entries(nationalityCounts);
+  let sortedCountries = Object.entries(countryData);
 
   if (sortType === "alphabetical") {
-    sorted.sort((a, b) => a[0].localeCompare(b[0]));
+    sortedCountries.sort((a, b) => a[0].localeCompare(b[0]));
   } else {
-    sorted.sort((a, b) => b[1] - a[1]);
+    sortedCountries.sort((a, b) => b[1].count - a[1].count);
   }
 
-  sorted.forEach(([nationality, count]) => {
-    const div = document.createElement("div");
-    div.innerText = `${nationality} — ${count}`;
-    container.appendChild(div);
+  sortedCountries.forEach(([country, data]) => {
+    const countryBlock = document.createElement("div");
+    countryBlock.className = "country-block";
+
+    const countryLink = document.createElement("a");
+    countryLink.href = `country.html?country=${encodeURIComponent(country)}`;
+    countryLink.className = "country-link";
+    countryLink.innerText = `${country} — ${data.count}`;
+
+    countryBlock.appendChild(countryLink);
+
+    const nationalities = Object.entries(data.nationalities)
+      .sort((a, b) => b[1] - a[1]);
+
+    if (nationalities.length > 1) {
+      const subsectionList = document.createElement("div");
+      subsectionList.className = "subsection-list";
+
+      nationalities.forEach(([nationality, count]) => {
+        const subsectionLink = document.createElement("a");
+
+        subsectionLink.href =
+          `country.html?country=${encodeURIComponent(country)}&nationality=${encodeURIComponent(nationality)}`;
+
+        subsectionLink.className = "subsection-link";
+        subsectionLink.innerText = `${nationality} — ${count}`;
+
+        subsectionList.appendChild(subsectionLink);
+      });
+
+      countryBlock.appendChild(subsectionList);
+    }
+
+    container.appendChild(countryBlock);
   });
 }

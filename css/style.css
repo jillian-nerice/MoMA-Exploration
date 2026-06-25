@@ -116,3 +116,172 @@ body {
   border-radius: 8px;
 }
 
+
+/* SIDEBAR COUNTRY LINKS */
+
+.country-block {
+  margin-bottom: 12px;
+}
+
+.country-link {
+  display: block;
+  color: black;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 6px;
+}
+
+.country-link:hover {
+  background-color: black;
+  color: white;
+}
+
+.subsection-list {
+  margin-left: 15px;
+  margin-top: 4px;
+}
+
+.subsection-link {
+  display: block;
+  color: #444;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 4px 6px;
+}
+
+.subsection-link:hover {
+  background-color: #ddd;
+}
+
+
+/* COUNTRY PAGE */
+
+.subgroup-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 500px;
+  margin: 30px auto;
+}
+
+.subgroup-card {
+  display: block;
+  background-color: #f4f4f4;
+  color: black;
+  text-decoration: none;
+  padding: 15px 20px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-weight: bold;
+}
+
+.subgroup-card:hover {
+  background-color: black;
+  color: white;
+}
+
+.artist-list-item {
+  max-width: 500px;
+  margin: 8px auto;
+  padding: 10px;
+  background-color: #f7f7f7;
+  border-radius: 6px;
+}
+
+.artist-list-item:hover {
+  background-color: #e0e0e0;
+}
+
+.back-link {
+  display: flex;              /*  turn it into a flex container */
+  align-items: center;        /*  vertical centering FIX */
+  justify-content: center;    /*  horizontal centering */
+
+  height: 40px;               /*  gives stable vertical space */
+  padding: 0 16px;            /*  remove vertical padding */
+
+  background: none;
+  border: none;
+  font-family: serif;
+  font-size: 16px;
+
+  cursor: pointer;
+  line-height: 1;             /*  removes extra text spacing */
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.back-container {
+  position: static;      /* ✅ removes fixed positioning */
+  margin-bottom: 20px;   /* spacing below button */
+  text-align: left;      /* ✅ aligns left */
+}
+
+
+#timeline {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.decade-section {
+  margin-bottom: 40px;
+}
+
+.decade-section h2 {
+  border-bottom: 2px solid black;
+  padding-bottom: 5px;
+}
+
+.artist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#works {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);  /* ✅ 2 per row */
+
+  gap: 20px;
+  margin-top: 20px;
+  padding-bottom: 80px;
+}
+
+
+.art-card img {
+  width: 100%;
+  height: 160px;        /* ✅ smaller + consistent */
+  object-fit: contain;  /* ✅ keeps full artwork visible */
+  border-radius: 6px;
+  background: white;
+}
+
+.art-card {
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.decade-button {
+  width: 100%;
+  text-align: center;
+  padding: 10px 14px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  cursor: pointer;
+  
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+
+  border-radius: 6px;
+}
+
+.decade-button:hover {
+  background-color: #e0e0e0;
+}
