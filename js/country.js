@@ -10,6 +10,7 @@ async function loadCountry() {
   const container = document.getElementById("artists");
   const backButton = document.querySelector(".back-link");
 
+  title.innerText = "";
   container.innerHTML = "";
 
   if (!selectedCountry) {
@@ -18,14 +19,17 @@ async function loadCountry() {
     return;
   }
 
-  // Make the back button behave differently depending on where we are
+  // BACK BUTTON
   if (selectedNationality) {
     backButton.innerText = `← Back to ${selectedCountry}`;
+
     backButton.onclick = function () {
-      window.location.href = `country.html?country=${encodeURIComponent(selectedCountry)}`;
+      window.location.href =
+        `country.html?country=${encodeURIComponent(selectedCountry)}`;
     };
   } else {
     backButton.innerText = "← Back to map";
+
     backButton.onclick = function () {
       window.location.href = "map.html";
     };
@@ -40,10 +44,13 @@ async function loadCountry() {
   const nationalityCounts = {};
 
   artists.forEach(artist => {
+    if (!artist.Nationality) return;
+
     const nationality = cleanNationality(artist.Nationality);
 
     if (nationalitiesForCountry.includes(nationality)) {
-      nationalityCounts[nationality] = (nationalityCounts[nationality] || 0) + 1;
+      nationalityCounts[nationality] =
+        (nationalityCounts[nationality] || 0) + 1;
     }
   });
 
@@ -85,7 +92,8 @@ async function loadCountry() {
         `country.html?country=${encodeURIComponent(selectedCountry)}&nationality=${encodeURIComponent(nationality)}`;
 
       link.className = "subgroup-card";
-      link.innerText = `${nationality} — ${count} artist${count === 1 ? "" : "s"}`;
+      link.innerText =
+        `${nationality} — ${count} artist${count === 1 ? "" : "s"}`;
 
       subgroupContainer.appendChild(link);
     });
@@ -126,16 +134,18 @@ function showArtistsByNationality(
 ) {
   title.innerText = `${selectedNationality} artists`;
 
-  // first, only keep artists from this nationality group
+  // Base list: only artists from this nationality group
   const baseFiltered = artists.filter(artist => {
+    if (!artist.Nationality) return false;
+
     return cleanNationality(artist.Nationality) === selectedNationality;
   });
 
-  // create filter area
+  // FILTER / SORT AREA
   const filterContainer = document.createElement("div");
   filterContainer.className = "filter-container";
 
-  // gender filter
+  // GENDER FILTER
   const genderLabel = document.createElement("label");
   genderLabel.innerText = "Filter by gender: ";
 
@@ -143,55 +153,53 @@ function showArtistsByNationality(
   genderSelect.id = "gender-filter";
 
   const genderOptions = [
-    "All",
-    "male",
-    "female",
-    "non-binary",
-    "Unknown"
+    { value: "All", label: "All" },
+    { value: "male", label: "Male" },
+    { value: "female", label: "Female" },
+    { value: "Unknown", label: "Unknown" }
   ];
 
   genderOptions.forEach(gender => {
     const option = document.createElement("option");
-    option.value = gender;
-    option.innerText = gender;
+    option.value = gender.value;
+    option.innerText = gender.label;
     genderSelect.appendChild(option);
   });
 
-  // time period filter
-  const timeLabel = document.createElement("label");
-  timeLabel.innerText = " Filter by time period: ";
+  // ORDER BY DROPDOWN
+  const orderLabel = document.createElement("label");
+  orderLabel.innerText = " Order by: ";
 
-  const timeSelect = document.createElement("select");
-  timeSelect.id = "time-filter";
+  const orderSelect = document.createElement("select");
+  orderSelect.id = "order-filter";
 
-  const timeOptions = [
-    { label: "All", value: "All" },
-    { label: "Before 1800", value: "before-1800" },
-    { label: "1800s", value: "1800s" },
-    { label: "1900s", value: "1900s" },
-    { label: "2000s", value: "2000s" },
-    { label: "Unknown date", value: "Unknown" }
+  const orderOptions = [
+    { value: "default", label: "Default" },
+    { value: "time-asc", label: "Time: oldest → newest" },
+    { value: "time-desc", label: "Time: newest → oldest" },
+    { value: "alpha-asc", label: "Alphabetical: A–Z" },
+    { value: "alpha-desc", label: "Alphabetical: Z–A" }
   ];
 
-  timeOptions.forEach(period => {
+  orderOptions.forEach(order => {
     const option = document.createElement("option");
-    option.value = period.value;
-    option.innerText = period.label;
-    timeSelect.appendChild(option);
+    option.value = order.value;
+    option.innerText = order.label;
+    orderSelect.appendChild(option);
   });
 
   filterContainer.appendChild(genderLabel);
   filterContainer.appendChild(genderSelect);
-  filterContainer.appendChild(timeLabel);
-  filterContainer.appendChild(timeSelect);
+  filterContainer.appendChild(orderLabel);
+  filterContainer.appendChild(orderSelect);
 
   container.appendChild(filterContainer);
 
-  // count text
+  // COUNT TEXT
   const countText = document.createElement("p");
   container.appendChild(countText);
 
-  // artist list container
+  // ARTIST LIST
   const artistList = document.createElement("div");
   artistList.id = "filtered-artist-list";
   container.appendChild(artistList);
@@ -200,12 +208,14 @@ function showArtistsByNationality(
     artistList.innerHTML = "";
 
     const selectedGender = genderSelect.value;
-    const selectedTime = timeSelect.value;
+    const selectedOrder = orderSelect.value;
 
     let filtered = baseFiltered.filter(artist => {
-      // gender filtering
-      const artistGender = artist.Gender || "Unknown";
+      const artistGender = artist.Gender
+        ? String(artist.Gender).toLowerCase()
+        : "Unknown";
 
+      // Gender filtering
       if (selectedGender !== "All") {
         if (selectedGender === "Unknown") {
           if (artist.Gender) return false;
@@ -214,32 +224,34 @@ function showArtistsByNationality(
         }
       }
 
-      // time filtering
-      const beginDate = Number(artist.BeginDate);
+      return true;
+    });
 
-      if (selectedTime !== "All") {
-        if (selectedTime === "Unknown") {
-          if (beginDate) return false;
-        }
+    // ORDERING / SORTING
+    filtered.sort((a, b) => {
+      const nameA = a.DisplayName || "";
+      const nameB = b.DisplayName || "";
 
-        if (selectedTime === "before-1800") {
-          if (!beginDate || beginDate >= 1800) return false;
-        }
+      const yearA = Number(a.BeginDate);
+      const yearB = Number(b.BeginDate);
 
-        if (selectedTime === "1800s") {
-          if (!beginDate || beginDate < 1800 || beginDate > 1899) return false;
-        }
-
-        if (selectedTime === "1900s") {
-          if (!beginDate || beginDate < 1900 || beginDate > 1999) return false;
-        }
-
-        if (selectedTime === "2000s") {
-          if (!beginDate || beginDate < 2000 || beginDate > 2099) return false;
-        }
+      if (selectedOrder === "time-asc") {
+        return (yearA || 9999) - (yearB || 9999);
       }
 
-      return true;
+      if (selectedOrder === "time-desc") {
+        return (yearB || 0) - (yearA || 0);
+      }
+
+      if (selectedOrder === "alpha-asc") {
+        return nameA.localeCompare(nameB);
+      }
+
+      if (selectedOrder === "alpha-desc") {
+        return nameB.localeCompare(nameA);
+      }
+
+      return 0;
     });
 
     countText.innerText =
@@ -261,7 +273,8 @@ function showArtistsByNationality(
       div.style.cursor = "pointer";
 
       div.onclick = () => {
-        let url = `artist.html?id=${artist.ConstituentID}&country=${encodeURIComponent(selectedCountry)}`;
+        let url =
+          `artist.html?id=${artist.ConstituentID}&country=${encodeURIComponent(selectedCountry)}`;
 
         if (selectedNationality) {
           url += `&nationality=${encodeURIComponent(selectedNationality)}`;
@@ -274,13 +287,12 @@ function showArtistsByNationality(
     });
   }
 
-  // update list when filters change
+  // Update list when filter/order changes
   genderSelect.onchange = renderArtists;
-  timeSelect.onchange = renderArtists;
+  orderSelect.onchange = renderArtists;
 
-  // initial render
+  // Initial render
   renderArtists();
 }
 
 window.onload = loadCountry;
-
