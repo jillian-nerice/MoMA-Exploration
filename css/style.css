@@ -2,7 +2,27 @@ body {
   margin: 0;
   font-family: serif;
 }
+/* HOMEPAGE BUTTONS */
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 80px;
+}
 
+.buttons a {
+  background-color: black;
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.buttons a:hover {
+  background-color: #444;
+}
 /* NAVBAR */
 .navbar {
   position: fixed;
@@ -95,3 +115,4 @@ body {
   padding: 10px;
   border-radius: 8px;
 }
+
