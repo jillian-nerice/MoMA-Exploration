@@ -21,7 +21,7 @@ async function loadCountry() {
 
   // BACK BUTTON
   if (selectedNationality) {
-    backButton.innerText = `← Back to ${selectedCountry}`;
+    backButton.innerText = `← Back to ${getDisplayCountryName(selectedCountry)}`;
 
     backButton.onclick = function () {
       window.location.href =
@@ -75,7 +75,7 @@ async function loadCountry() {
   // CASE 2:
   // If country has multiple subgroup categories, show the subgroup choice page
   if (availableNationalities.length > 1) {
-    title.innerText = `Artists from ${selectedCountry}`;
+    title.innerText = `Artists from ${getDisplayCountryName(selectedCountry)}`;
 
     const intro = document.createElement("p");
     intro.innerText =
@@ -120,7 +120,7 @@ async function loadCountry() {
 
   // CASE 4:
   // No artists found
-  title.innerText = `Artists from ${selectedCountry}`;
+  title.innerText = `Artists from ${getDisplayCountryName(selectedCountry)}`;
   container.innerText = "No artists found for this country.";
 }
 
@@ -132,7 +132,9 @@ function showArtistsByNationality(
   title,
   container
 ) {
-  title.innerText = `${selectedNationality} artists`;
+
+    title.innerText =
+    `${getDisplayNationalityName(selectedNationality)} artists`;
 
   // Base list: only artists from this nationality group
   const baseFiltered = artists.filter(artist => {

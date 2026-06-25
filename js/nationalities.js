@@ -144,3 +144,18 @@ function cleanNationality(nationality) {
   return nationality ? nationality.trim() : "";
 }
 
+function getDisplayCountryName(country) {
+  const aliases = {
+    "Israel": "Occupied Palestinian Territories"
+  };
+
+  return aliases[country] || country;
+}
+
+function getDisplayNationalityName(nationality) {
+  const aliases = {
+    "Israeli": "IllegalSettler"
+  };
+
+  return aliases[nationality] || nationality;
+}

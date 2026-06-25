@@ -2,45 +2,60 @@
 <html>
 <head>
   <title>Geographical Exploration</title>
-
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
 </head>
 
 <body>
 
-  <nav class="navbar">
-    <a href="index.html" class="logo">MoMA Explorer</a>
-  </nav>
+<nav class="navbar">
+  <a href="index.html" class="logo">MoMA Explorer</a>
+</nav>
 
-  <div class="main">
-    <h1>Geographical Exploration</h1>
+<div class="main">
 
-    <!-- NEW FLEX LAYOUT -->
-    <div class="explorer-layout">
+  <button class="back-global back-link" onclick="goHome()">← Back</button>
 
-      <!-- SIDEBAR -->
-        <div class="sidebar">
-        <button onclick="showCountries()">Show Countries</button>
+  <div class="content-container">
 
-        <label for="sort-countries">Sort by:</label>
-        <select id="sort-countries" onchange="showCountries()">
-            <option value="count">Count: high to low</option>
-            <option value="alphabetical">Alphabetical: A–Z</option>
-        </select>
+    <h1 class="page-title">Geographical Exploration</h1>
 
-        <div id="country-list"></div>
-        </div>
+    <p class="page-blurb">
+      Explore the geographic distribution of artists in MoMA’s collection. 
+      Click on a country to discover artists and artworks associated with that region.
+    </p>
 
-      <!-- MAP -->
-      <div id="map"></div>
-
-    </div>
   </div>
 
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="js/nationalities.js"></script>
-    <script src="js/map.js"></script>
+  <div class="explorer-layout">
+
+    <div class="sidebar">
+      <button onclick="showCountries()">Show Countries</button>
+
+      <label for="sort-countries">Sort by:</label>
+      <select id="sort-countries" onchange="showCountries()">
+        <option value="count">Count: high to low</option>
+        <option value="alphabetical">Alphabetical: A–Z</option>
+      </select>
+
+      <div id="country-list"></div>
+    </div>
+
+    <div id="map"></div>
+
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="js/nationalities.js"></script>
+<script src="js/map.js"></script>
+
+<script>
+  function goHome() {
+    window.location.href = "index.html";
+  }
+</script>
 
 </body>
 </html>

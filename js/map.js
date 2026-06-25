@@ -133,10 +133,14 @@ async function loadMap() {
     const geoCountryName = feature.properties.name;
     const count = getCountryCount(geoCountryName);
 
+    const standardCountryName = getStandardCountryFromGeo(geoCountryName);
+    const displayCountryName = getDisplayCountryName(standardCountryName);
+
     layer.bindTooltip(
-      `<strong>${geoCountryName}</strong><br>${count} artists`,
-      { sticky: true }
+    `<strong>${displayCountryName}</strong><br>${count} artists`,
+    { sticky: true }
     );
+
 
     layer.on("mouseover", function () {
       layer.setStyle({
@@ -287,7 +291,8 @@ async function showCountries() {
     const countryLink = document.createElement("a");
     countryLink.href = `country.html?country=${encodeURIComponent(country)}`;
     countryLink.className = "country-link";
-    countryLink.innerText = `${country} — ${data.count}`;
+    countryLink.innerText =
+      `${getDisplayCountryName(country)} — ${data.count}`;
 
     countryBlock.appendChild(countryLink);
 

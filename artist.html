@@ -13,19 +13,31 @@
 
 <div class="main">
 
-  <button class="back-link">← Back</button>
+  <!-- ✅ BACK BUTTON (outside content, always left) -->
+  <button class="back-global back-link">← Back</button>
 
-  <h1 id="name"></h1>
+  <div class="content-container">
 
-  <div id="details"></div>
+    <h1 class="page-title" id="name"></h1>
 
-  <h2>Artworks</h2>
-  <p id="works-count"></p>
-  <div id="works"></div>
+    <p class="page-blurb" id="artist-blurb"></p>
+
+    <div id="details"></div>
+
+    <h2>Artworks</h2>
+    <p id="works-count"></p>
+    <div id="works"></div>
+
+  </div>
 
 </div>
 
 <script src="js/artist.js"></script>
+
+<div id="image-modal" class="image-modal">
+  <span class="close-modal">&times;</span>
+  <img id="modal-image" />
+</div>
 
 </body>
 </html>

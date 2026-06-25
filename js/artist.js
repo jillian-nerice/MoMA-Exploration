@@ -28,7 +28,7 @@ async function loadArtist() {
     };
 
     } else if (selectedCountry) {
-    backButton.innerText = `← Back to ${selectedCountry}`;
+    backButton.innerText = `← Back to ${getDisplayCountryName(selectedCountry)}`;
 
     backButton.onclick = () => {
         window.location.href =
@@ -132,9 +132,13 @@ async function loadArtist() {
     }
 
     img.alt = work.Title || "Artwork";
+    img.onclick = () => {
+    const modal = document.getElementById("image-modal");
+    const modalImg = document.getElementById("modal-image");
 
-    card.appendChild(img);
-
+    modal.style.display = "flex";
+    modalImg.src = img.src;
+    };
 
     // TITLE
     const title = document.createElement("p");
@@ -158,6 +162,21 @@ async function loadArtist() {
 
     worksContainer.appendChild(card);
   });
+  const modal = document.getElementById("image-modal");
+    const closeBtn = document.querySelector(".close-modal");
+
+    // close when clicking X
+    closeBtn.onclick = () => {
+    modal.style.display = "none";
+    };
+
+    // close when clicking outside image
+    modal.onclick = (e) => {
+    if (e.target === modal) {
+        modal.style.display = "none";
+    }
+    };
+
 }
 
 window.onload = loadArtist;

@@ -13,14 +13,29 @@
 
 <div class="main">
 
-  <h1>Explore by Time</h1>
+  <button class="back-global back-link" onclick="goHome()">← Back</button>
 
-  <!-- timeline container -->
-  <div id="timeline"></div>
+  <div class="content-container">
+
+    <h1 class="page-title">Explore by Time</h1>
+
+    <p class="page-blurb">
+      Explore how the MoMA collection has evolved over time by viewing when artists entered the collection.
+    </p>
+
+    <div id="timeline"></div>
+
+  </div>
 
 </div>
 
 <script src="js/timeline.js"></script>
+
+<script>
+  function goHome() {
+    window.location.href = "index.html";
+  }
+</script>
 
 </body>
 </html>
