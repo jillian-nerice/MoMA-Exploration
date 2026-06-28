@@ -12,52 +12,53 @@ async function loadArtist() {
   const worksContainer = document.getElementById("works");
   const worksCount = document.getElementById("works-count");
 
-  // ✅ CLEAR EVERYTHING FIRST
+  // CLEAR EVERYTHING FIRST
   nameContainer.innerHTML = "";
   detailsContainer.innerHTML = "";
   worksContainer.innerHTML = "";
   worksCount.innerHTML = "";
 
-  // ✅ BACK BUTTON
-    if (selectedNationality && selectedCountry) {
+  //  BACK BUTTON
+  if (selectedNationality && selectedCountry) {
     backButton.innerText = `← Back to ${selectedNationality}`;
 
     backButton.onclick = () => {
-        window.location.href =
+      window.location.href =
         `country.html?country=${encodeURIComponent(selectedCountry)}&nationality=${encodeURIComponent(selectedNationality)}`;
     };
 
-    } else if (selectedCountry) {
+  } else if (selectedCountry) {
     backButton.innerText = `← Back to ${getDisplayCountryName(selectedCountry)}`;
 
     backButton.onclick = () => {
-        window.location.href =
+      window.location.href =
         `country.html?country=${encodeURIComponent(selectedCountry)}`;
     };
 
-    } else if (from === "timeline") {
-    // ✅ NEW CASE
+  } else if (from === "timeline") {
+
     backButton.innerText = "← Back to Timeline";
 
     backButton.onclick = () => {
-        window.location.href = "timeline.html";
+      window.location.href = "timeline.html";
     };
 
-    } else {
-    // fallback (rare case)
+  } else {
+
     backButton.innerText = "← Back to Map";
 
     backButton.onclick = () => {
-        window.location.href = "map.html";
+      window.location.href = "map.html";
     };
-    }
-  // ✅ CHECK ID
+  }
+
+  //  CHECK ID
   if (!artistId) {
     nameContainer.innerText = "Artist not found";
     return;
   }
 
-  // ✅ LOAD ARTISTS
+  //  LOAD ARTISTS
   const artistRes = await fetch("data/Artists_clean.json");
   const artists = await artistRes.json();
 
@@ -70,10 +71,10 @@ async function loadArtist() {
     return;
   }
 
-  // ✅ NAME
+  //  NAME
   nameContainer.innerText = artist.DisplayName;
 
-  // ✅ DETAILS
+  //  DETAILS
   if (artist.ArtistBio) {
     const bio = document.createElement("p");
     bio.innerText = artist.ArtistBio;
@@ -92,16 +93,14 @@ async function loadArtist() {
     `Died: ${artist.EndDate || "Unknown"}`;
   detailsContainer.appendChild(dates);
 
-  // ✅ LOAD ARTWORKS
+  //  LOAD ARTWORKS
   const worksRes = await fetch("data/Artworks_clean.json");
   const artworks = await worksRes.json();
 
   const numericArtistId = parseInt(artistId);
 
-  // ✅ FILTER (SAFE VERSION)
   const artistWorks = artworks.filter(work => {
     if (!work.ConstituentID) return false;
-
     return work.ConstituentID.includes(numericArtistId);
   });
 
@@ -115,30 +114,44 @@ async function loadArtist() {
 
   const visibleWorks = artistWorks.slice(0, 30);
 
-  // ✅ DISPLAY
+  //  DISPLAY
   visibleWorks.forEach(work => {
     const card = document.createElement("div");
     card.className = "art-card";
 
-    // IMAGE
-    const img = document.createElement("img");
+    //  IMAGE OR FALLBACK
+    let imgElement;
 
-    // ✅ if valid image exists
-    if (work.ImageURL && work.ImageURL !== "") {
-    img.src = work.ImageURL;
-    } else {
-    // ✅ fallback box instead of broken image
-    img.src = "https://via.placeholder.com/200?text=No+Image";
+    function createFallback() {
+      const fallback = document.createElement("div");
+      fallback.className = "image-fallback";
+      fallback.innerText = "Image unavailable";
+      return fallback;
     }
 
-    img.alt = work.Title || "Artwork";
-    img.onclick = () => {
-    const modal = document.getElementById("image-modal");
-    const modalImg = document.getElementById("modal-image");
+    if (work.ImageURL && work.ImageURL.trim() !== "") {
+      const img = document.createElement("img");
+      img.src = work.ImageURL;
 
-    modal.style.display = "flex";
-    modalImg.src = img.src;
-    };
+      img.onerror = () => {
+        const fallback = createFallback();
+        card.replaceChild(fallback, img);
+      };
+
+      img.alt = work.Title ? `Artwork: ${work.Title}` : "Artwork";
+
+      img.onclick = () => {
+        const modal = document.getElementById("image-modal");
+        const modalImg = document.getElementById("modal-image");
+
+        modal.style.display = "flex";
+        modalImg.src = img.src;
+      };
+
+      imgElement = img;
+    } else {
+      imgElement = createFallback();
+    }
 
     // TITLE
     const title = document.createElement("p");
@@ -149,34 +162,41 @@ async function loadArtist() {
     date.innerText = work.Date || "";
 
     // LINK
-    const link = document.createElement("a");
-    link.href = work.URL;
-    link.target = "_blank";
-    link.innerText = "View on MoMA";
+    let link;
+
+    if (work.URL && work.URL.trim() !== "") {
+      link = document.createElement("a");
+      link.href = work.URL;
+      link.target = "_blank";
+      link.innerText = "View on MoMA";
+    } else {
+      link = document.createElement("span");
+      link.innerText = "No link available";
+      link.className = "disabled-link";
+    }
 
     // BUILD CARD
-    card.appendChild(img);
+    card.appendChild(imgElement);
     card.appendChild(title);
     card.appendChild(date);
     card.appendChild(link);
 
     worksContainer.appendChild(card);
   });
+
+  //  MODAL CLOSE LOGIC
   const modal = document.getElementById("image-modal");
-    const closeBtn = document.querySelector(".close-modal");
+  const closeBtn = document.querySelector(".close-modal");
 
-    // close when clicking X
-    closeBtn.onclick = () => {
+  closeBtn.onclick = () => {
     modal.style.display = "none";
-    };
+  };
 
-    // close when clicking outside image
-    modal.onclick = (e) => {
+  modal.onclick = (e) => {
     if (e.target === modal) {
-        modal.style.display = "none";
+      modal.style.display = "none";
     }
-    };
-
+  };
 }
 
 window.onload = loadArtist;
