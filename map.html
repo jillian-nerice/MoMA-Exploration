@@ -30,16 +30,27 @@
   <div class="explorer-layout">
 
     <div class="sidebar">
-      <button onclick="showCountries()">Show Countries</button>
 
-      <label for="sort-countries">Sort by:</label>
-      <select id="sort-countries" onchange="showCountries()">
-        <option value="count">Count: high to low</option>
-        <option value="alphabetical">Alphabetical: A–Z</option>
-      </select>
+  <div class="sidebar-controls">
+    <input 
+      type="text" 
+      id="country-search" 
+      placeholder="Search country or nationality..." 
+      oninput="showCountries()"
+    >
 
-      <div id="country-list"></div>
-    </div>
+    <button onclick="showCountries()">Show Countries</button>
+
+    <label for="sort-countries">Sort by:</label>
+    <select id="sort-countries" onchange="showCountries()">
+      <option value="count">Count: high to low</option>
+      <option value="alphabetical">Alphabetical: A–Z</option>
+    </select>
+  </div>
+
+  <div id="country-list"></div>
+
+</div>
 
     <div id="map"></div>
 

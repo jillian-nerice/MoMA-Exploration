@@ -83,7 +83,7 @@ async function loadMap() {
   const unmappedNationalities = {};
   const missingGeoCountries = {};
 
-  artists.forEach(artist => {
+  artists.forEach (artist => {
     const nationality = cleanNationality(artist.Nationality);
     if (!nationality) return;
 
@@ -137,10 +137,9 @@ async function loadMap() {
     const displayCountryName = getDisplayCountryName(standardCountryName);
 
     layer.bindTooltip(
-    `<strong>${displayCountryName}</strong><br>${count} artists`,
-    { sticky: true }
+      `<strong>${displayCountryName}</strong><br>${count} artists`,
+      { sticky: true }
     );
-
 
     layer.on("mouseover", function () {
       layer.setStyle({
@@ -154,8 +153,6 @@ async function loadMap() {
     });
 
     layer.on("click", function () {
-      const standardCountryName = getStandardCountryFromGeo(geoCountryName);
-
       window.location.href =
         `country.html?country=${encodeURIComponent(standardCountryName)}`;
     });
@@ -254,6 +251,10 @@ async function showCountries() {
   const sortSelect = document.getElementById("sort-countries");
   const sortType = sortSelect ? sortSelect.value : "count";
 
+  // ✅ SEARCH INPUT
+  const searchInput = document.getElementById("country-search");
+  const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : "";
+
   const countryData = {};
 
   artists.forEach(artist => {
@@ -285,14 +286,29 @@ async function showCountries() {
   }
 
   sortedCountries.forEach(([country, data]) => {
+    const displayCountry = getDisplayCountryName(country);
+
+    // ✅ country can match by real name OR display/nickname
+    const countryMatch =
+      country.toLowerCase().includes(searchTerm) ||
+      displayCountry.toLowerCase().includes(searchTerm);
+
+    // ✅ nationality can match too
+    const nationalityMatch = Object.keys(data.nationalities)
+      .some(nationality => nationality.toLowerCase().includes(searchTerm));
+
+    // ✅ if user searched and neither country nor nationality matches, skip this country
+    if (searchTerm && !countryMatch && !nationalityMatch) {
+      return;
+    }
+
     const countryBlock = document.createElement("div");
     countryBlock.className = "country-block";
 
     const countryLink = document.createElement("a");
     countryLink.href = `country.html?country=${encodeURIComponent(country)}`;
     countryLink.className = "country-link";
-    countryLink.innerText =
-      `${getDisplayCountryName(country)} — ${data.count}`;
+    countryLink.innerText = `${displayCountry} — ${data.count}`;
 
     countryBlock.appendChild(countryLink);
 
@@ -304,6 +320,15 @@ async function showCountries() {
       subsectionList.className = "subsection-list";
 
       nationalities.forEach(([nationality, count]) => {
+        const nationalityMatchesSearch =
+          nationality.toLowerCase().includes(searchTerm);
+
+        // ✅ If a country matches, show all its nationalities.
+        // ✅ If only a nationality matches, show only the matching nationalities.
+        if (searchTerm && !countryMatch && !nationalityMatchesSearch) {
+          return;
+        }
+
         const subsectionLink = document.createElement("a");
 
         subsectionLink.href =
@@ -320,4 +345,9 @@ async function showCountries() {
 
     container.appendChild(countryBlock);
   });
+
+  // ✅ EMPTY STATE
+  if (container.innerHTML === "") {
+    container.innerText = "No matching countries or nationalities found.";
+  }
 }
