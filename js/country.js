@@ -22,25 +22,21 @@ async function loadCountry() {
   // BACK BUTTON
   if (selectedNationality) {
     backButton.innerText = `← Back to ${getDisplayCountryName(selectedCountry)}`;
-
     backButton.onclick = function () {
       window.location.href =
         `country.html?country=${encodeURIComponent(selectedCountry)}`;
     };
   } else {
     backButton.innerText = "← Back to map";
-
     backButton.onclick = function () {
       window.location.href = "map.html";
     };
   }
 
-  // Find all nationality labels that belong to this country
   const nationalitiesForCountry = Object.entries(nationalityToCountry)
     .filter(([nationality, country]) => country === selectedCountry)
     .map(([nationality]) => nationality);
 
-  // Count artists by nationality within this country
   const nationalityCounts = {};
 
   artists.forEach(artist => {
@@ -55,12 +51,13 @@ async function loadCountry() {
   });
 
   const availableNationalities = Object.entries(nationalityCounts)
-    .filter(([nationality, count]) => count > 0)
+    .filter(([_, count]) => count > 0)
     .sort((a, b) => b[1] - a[1]);
 
-  // CASE 1:
-  // If a subgroup/nationality was clicked, show only that subgroup's artists
+  // CASE 1: specific nationality
   if (selectedNationality) {
+    document.getElementById("searchContainer").style.display = "flex";
+
     showArtistsByNationality(
       selectedCountry,
       selectedNationality,
@@ -68,12 +65,12 @@ async function loadCountry() {
       title,
       container
     );
-
     return;
   }
 
-  // CASE 2:
-  // If country has multiple subgroup categories, show the subgroup choice page
+  // CASE 2: multiple subgroups
+  document.getElementById("searchContainer").style.display = "none";
+
   if (availableNationalities.length > 1) {
     title.innerText = `Artists from ${getDisplayCountryName(selectedCountry)}`;
 
@@ -87,10 +84,8 @@ async function loadCountry() {
 
     availableNationalities.forEach(([nationality, count]) => {
       const link = document.createElement("a");
-
       link.href =
         `country.html?country=${encodeURIComponent(selectedCountry)}&nationality=${encodeURIComponent(nationality)}`;
-
       link.className = "subgroup-card";
       link.innerText =
         `${nationality} — ${count} artist${count === 1 ? "" : "s"}`;
@@ -102,9 +97,10 @@ async function loadCountry() {
     return;
   }
 
-  // CASE 3:
-  // If country only has one nationality category, show artists directly
+  // CASE 3: single nationality
   if (availableNationalities.length === 1) {
+    document.getElementById("searchContainer").style.display = "flex";
+
     const onlyNationality = availableNationalities[0][0];
 
     showArtistsByNationality(
@@ -114,12 +110,10 @@ async function loadCountry() {
       title,
       container
     );
-
     return;
   }
 
-  // CASE 4:
-  // No artists found
+  // CASE 4: none
   title.innerText = `Artists from ${getDisplayCountryName(selectedCountry)}`;
   container.innerText = "No artists found for this country.";
 }
@@ -132,22 +126,17 @@ function showArtistsByNationality(
   title,
   container
 ) {
-
-    title.innerText =
+  title.innerText =
     `${getDisplayNationalityName(selectedNationality)} artists`;
 
-  // Base list: only artists from this nationality group
   const baseFiltered = artists.filter(artist => {
     if (!artist.Nationality) return false;
-
     return cleanNationality(artist.Nationality) === selectedNationality;
   });
 
-  // FILTER / SORT AREA
   const filterContainer = document.createElement("div");
   filterContainer.className = "filter-container";
 
-  // GENDER FILTER
   const genderLabel = document.createElement("label");
   genderLabel.innerText = "Filter by gender: ";
 
@@ -161,14 +150,13 @@ function showArtistsByNationality(
     { value: "Unknown", label: "Unknown" }
   ];
 
-  genderOptions.forEach(gender => {
+  genderOptions.forEach(g => {
     const option = document.createElement("option");
-    option.value = gender.value;
-    option.innerText = gender.label;
+    option.value = g.value;
+    option.innerText = g.label;
     genderSelect.appendChild(option);
   });
 
-  // ORDER BY DROPDOWN
   const orderLabel = document.createElement("label");
   orderLabel.innerText = " Order by: ";
 
@@ -183,10 +171,10 @@ function showArtistsByNationality(
     { value: "alpha-desc", label: "Alphabetical: Z–A" }
   ];
 
-  orderOptions.forEach(order => {
+  orderOptions.forEach(o => {
     const option = document.createElement("option");
-    option.value = order.value;
-    option.innerText = order.label;
+    option.value = o.value;
+    option.innerText = o.label;
     orderSelect.appendChild(option);
   });
 
@@ -197,27 +185,34 @@ function showArtistsByNationality(
 
   container.appendChild(filterContainer);
 
-  // COUNT TEXT
   const countText = document.createElement("p");
   container.appendChild(countText);
 
-  // ARTIST LIST
   const artistList = document.createElement("div");
   artistList.id = "filtered-artist-list";
   container.appendChild(artistList);
 
   function renderArtists() {
+    const searchValue = document
+      .getElementById("artistSearch")
+      .value.toLowerCase();
+
     artistList.innerHTML = "";
 
     const selectedGender = genderSelect.value;
     const selectedOrder = orderSelect.value;
 
     let filtered = baseFiltered.filter(artist => {
+      const name = (artist.DisplayName || "").toLowerCase();
+
+      if (searchValue && !name.includes(searchValue)) {
+        return false;
+      }
+
       const artistGender = artist.Gender
         ? String(artist.Gender).toLowerCase()
-        : "Unknown";
+        : "unknown";
 
-      // Gender filtering
       if (selectedGender !== "All") {
         if (selectedGender === "Unknown") {
           if (artist.Gender) return false;
@@ -229,7 +224,6 @@ function showArtistsByNationality(
       return true;
     });
 
-    // ORDERING / SORTING
     filtered.sort((a, b) => {
       const nameA = a.DisplayName || "";
       const nameB = b.DisplayName || "";
@@ -240,15 +234,12 @@ function showArtistsByNationality(
       if (selectedOrder === "time-asc") {
         return (yearA || 9999) - (yearB || 9999);
       }
-
       if (selectedOrder === "time-desc") {
         return (yearB || 0) - (yearA || 0);
       }
-
       if (selectedOrder === "alpha-asc") {
         return nameA.localeCompare(nameB);
       }
-
       if (selectedOrder === "alpha-desc") {
         return nameB.localeCompare(nameA);
       }
@@ -266,7 +257,6 @@ function showArtistsByNationality(
 
     filtered.forEach(artist => {
       const div = document.createElement("div");
-
       div.className = "artist-list-item";
 
       const birthYear = artist.BeginDate ? ` (${artist.BeginDate})` : "";
@@ -289,11 +279,11 @@ function showArtistsByNationality(
     });
   }
 
-  // Update list when filter/order changes
   genderSelect.onchange = renderArtists;
   orderSelect.onchange = renderArtists;
 
-  // Initial render
+  document.getElementById("artistSearch").onkeyup = renderArtists;
+
   renderArtists();
 }
 

@@ -286,6 +286,28 @@ body {
 /* =========================
    ARTIST LIST
 ========================= */
+
+.search-container {
+  width: 100%;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+#artistSearch {
+  width: 60%;
+  max-width: 400px;
+  padding: 10px 15px;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  outline: none;
+  transition: 0.2s;
+}
+
+#artistSearch:focus {
+  border-color: #333;
+}
 #filtered-artist-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
